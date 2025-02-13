@@ -12,7 +12,7 @@ use heuristics::*;
 use search::*;
 
 fn main() {
-    let mut board = Board::new([[1 ,2, 3],[4, 8, 5],[0, 7, 6]]);
+    let (_, mut board) = INSTANCES[31];
     let plan = [Direction::Right, Direction::Up, Direction::Right, Direction::Down];
 
     let (result, stats) = search(board);
