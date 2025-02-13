@@ -87,7 +87,7 @@ impl Board {
 
     /// Plays a sequence of moves on the board, printing the board at each step.
     /// Intended for displaying purpose but very slow (the thread will be put to sleep between each frame)
-    pub fn play(&self, moves: &[Direction]) {
+    pub fn play(&self, moves: &Vec<Direction>) {
         // current board from which the play starts
         let mut current_board = self.clone();
         println!("{current_board}");

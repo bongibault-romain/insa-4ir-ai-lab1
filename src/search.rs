@@ -27,7 +27,7 @@ impl Stats {
     }
 }
 
-pub fn search(init_state: Board) -> (Option<Vec<Direction>>, Stats) {
+pub fn search(init_state: Board, heuristic: Heuristic) -> (Option<Vec<Direction>>, Stats) {
     // record the start time when starting the search (so we can later the time that elapsed since)
     let start = std::time::Instant::now();
 
@@ -87,12 +87,14 @@ pub fn search(init_state: Board) -> (Option<Vec<Direction>>, Stats) {
                 None => u32::MAX
             };
 
+            let h_value = heuristic.estimate(&unwrapped_child);
+
             if (child_cost > s_cost + 1) {
                 path_costs.insert(unwrapped_child, s_cost + 1);
                 predecessors.insert(unwrapped_child, (s, direction));
-                heap.insert(unwrapped_child, s_cost + 1);
+                heap.insert(unwrapped_child, s_cost + 1 + h_value);
             } else {
-                heap.insert(unwrapped_child, child_cost);
+                heap.insert(unwrapped_child, child_cost + h_value);
             }
         }
     }
@@ -116,7 +118,7 @@ mod test {
         // validates that search does return the optimal plan on the first 20 isntances
 
         for (expected_cost, init) in &INSTANCES[0..20] {
-            let (path, stats) = search(*init);
+            let (path, stats) = search(*init, Heuristic::Blind);
             let path = path.expect("no plan");
             assert!(init.is_valid_plan(&path));
             assert_eq!(path.len(), *expected_cost as usize);
