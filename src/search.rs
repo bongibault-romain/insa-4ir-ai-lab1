@@ -42,8 +42,6 @@ pub fn search(init_state: Board, heuristic: Heuristic) -> (Option<Vec<Direction>
 
     // keeps track all states that have been expanded
     let mut expanded: HashSet<Board> = HashSet::new();
-
-    let directions = [Direction::Left, Direction::Right, Direction::Up, Direction::Down];
     
     let mut result: Option<Vec<Direction>> = None;
 
@@ -52,7 +50,10 @@ pub fn search(init_state: Board, heuristic: Heuristic) -> (Option<Vec<Direction>
 
     while !heap.is_empty() {
         let s: Board = heap.pop().unwrap();
-        expanded.insert(s);
+
+        if expanded.contains(&s) {
+            continue;
+        }
 
         if (s == Board::GOAL) {
             let mut current: Board = Board::GOAL;
@@ -70,12 +71,14 @@ pub fn search(init_state: Board, heuristic: Heuristic) -> (Option<Vec<Direction>
             break;
         }
 
+        expanded.insert(s);
+
         let s_cost = *path_costs.get(&s).unwrap();
 
-        for direction in directions {
+        for direction in DIRECTIONS {
             let child = s.apply(direction);
 
-            if (child.is_none() || expanded.contains(&child.unwrap())) {
+            if (child.is_none()) {
                 continue;
             }
 
