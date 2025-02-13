@@ -112,7 +112,15 @@ impl Board {
     /// Returs `true` if the given sequence of actions is a valid plan that leads to the goal state.
     pub fn is_valid_plan(&self, actions: &[Direction]) -> bool {
         let mut current_board = *self;
-        todo!("replay each of the moves in the actions array and see if ends in the goal state")
+
+        for action in actions  {
+            match current_board.apply(*action) {
+                Some(b) => current_board = b,
+                None => return false
+            }
+        }
+
+        current_board == Board::GOAL
     }
 }
 
