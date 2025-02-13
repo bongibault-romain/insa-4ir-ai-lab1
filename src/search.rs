@@ -51,7 +51,7 @@ pub fn search(init_state: Board, heuristic: Heuristic) -> (Option<Vec<Direction>
     path_costs.insert(init_state, 0);
 
     while !heap.is_empty() {
-        let s = heap.pop().unwrap();
+        let s: Board = heap.pop().unwrap();
         expanded.insert(s);
 
         if (s == Board::GOAL) {
@@ -61,11 +61,9 @@ pub fn search(init_state: Board, heuristic: Heuristic) -> (Option<Vec<Direction>
             while current != init_state {
                 let (parent, direction) = predecessors.get(&current).unwrap();         
         
-                r.push(*direction);
+                r.insert(0, *direction);
                 current = *parent;
             }
-
-            r.reverse();
 
             result = Some(r);
 
