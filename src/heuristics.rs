@@ -1,5 +1,3 @@
-use std::path::absolute;
-
 use crate::board::*;
 
 /// A heuristic function to estimate the cost of reaching the goal state from a given board.
