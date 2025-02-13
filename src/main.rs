@@ -12,11 +12,15 @@ use heuristics::*;
 use search::*;
 
 fn main() {
-    let mut board = Board::new([[1 ,2, 3],[4, 8, 5],[EMPTY_CELL, 7, 6]]);
+    let mut board = Board::new([[1 ,2, 3],[4, 8, 5],[0, 7, 6]]);
     let plan = [Direction::Right, Direction::Up, Direction::Right, Direction::Down];
 
-    println!("Is the plan valid: {}", board.is_valid_plan(&plan));
+    let (result, stats) = search(board);
 
-    board.play(&plan);
+    println!("Path: {:?}", result);
+    println!("Time: {:?}, Nodes: {:?}", stats.runtime, stats.expanded)
+
+    // println!("Is the plan valid: {}", board.is_valid_plan(&plan));
+    // board.play(&plan);
 
 }

@@ -3,6 +3,7 @@ use crate::heuristics::*;
 use crate::min_heap::*;
 use std::collections::*;
 use std::time::Duration;
+use std::u32::MAX;
 
 /// Statistics of the search, used to evaluate the performance of the search algorithms.
 /// Feel free to add more fields to this struct if you need them.
@@ -42,16 +43,67 @@ pub fn search(init_state: Board) -> (Option<Vec<Direction>>, Stats) {
     // keeps track all states that have been expanded
     let mut expanded: HashSet<Board> = HashSet::new();
 
-    // ...
-    // TODO: implement the search algorithm
-    // ...
+    let directions = [Direction::Left, Direction::Right, Direction::Up, Direction::Down];
+    
+    let mut result: Option<Vec<Direction>> = None;
+
+    heap.insert(init_state, 0);
+    path_costs.insert(init_state, 0);
+
+    while !heap.is_empty() {
+        let s = heap.pop().unwrap();
+        expanded.insert(s);
+
+        if (s == Board::GOAL) {
+            let mut current: Board = Board::GOAL;
+            let mut r: Vec<Direction> = Vec::new();
+        
+            while current != init_state {
+                let (parent, direction) = predecessors.get(&current).unwrap();         
+        
+                r.push(*direction);
+                current = *parent;
+            }
+
+            r.reverse();
+
+            result = Some(r);
+
+            break;
+        }
+
+        let s_cost = *path_costs.get(&s).unwrap();
+
+        for direction in directions {
+            let child = s.apply(direction);
+
+            if (child.is_none() || expanded.contains(&child.unwrap())) {
+                continue;
+            }
+
+            let unwrapped_child = child.unwrap();
+            let child_cost = match path_costs.get(&unwrapped_child) {
+                Some(a) => *a,
+                None => u32::MAX
+            };
+
+            if (child_cost > s_cost + 1) {
+                path_costs.insert(unwrapped_child, s_cost + 1);
+                predecessors.insert(unwrapped_child, (s, direction));
+                heap.insert(unwrapped_child, s_cost + 1);
+            } else {
+                heap.insert(unwrapped_child, child_cost);
+            }
+        }
+    }
 
     // here is an example to measure the runtime and returns the statistics
     let runtime = start.elapsed();
     // example to construct a Stats instance
-    let stats = Stats::new(0, runtime);
+    let stats = Stats::new(expanded.len(), runtime);
     // return the results and associated stats
-    (todo!(), stats)
+
+    (result, stats)
 }
 
 #[cfg(test)]
